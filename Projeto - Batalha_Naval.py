@@ -3,7 +3,7 @@ tabuleiroPc = []
 tabuleiroJogador = []
 tamanho_tabuleiro = 15 #entrada do tamanho do tabuleiro.
 
-def construirtabuleiro(tamanho_tabuleiro, tabuleiro): #Laço construtor de tabuleiro.
+def construirTabuleiro(tamanho_tabuleiro, tabuleiro): #Laço construtor de tabuleiro.
     for i in range(tamanho_tabuleiro):
         lista = []
         for j in range(tamanho_tabuleiro):
@@ -11,7 +11,7 @@ def construirtabuleiro(tamanho_tabuleiro, tabuleiro): #Laço construtor de tabul
         tabuleiro.append(lista)
 
 
-def imprimirtabuleiro():
+def imprimirTabuleiro():
     limite = tamanho_tabuleiro
     if limite > 10:
         limite = 10
@@ -43,11 +43,20 @@ def imprimirtabuleiro():
             print(tabuleiroPc[i][j], end='  ')
         print()
 
+def posicionarBarco(tabuleiro, celula, barco):
+    if barco[1] == 'horizontal':
+        for i in range(barco[0]):
+            tabuleiro[celula[0]][celula[1]+i] = '<'
 
 
-construirtabuleiro(tamanho_tabuleiro, tabuleiroJogador)
-construirtabuleiro(tamanho_tabuleiro, tabuleiroPc)
-imprimirtabuleiro()
+barco = [5, 'horizontal']
+celula = [2, 2]
+
+
+construirTabuleiro(tamanho_tabuleiro, tabuleiroJogador)
+construirTabuleiro(tamanho_tabuleiro, tabuleiroPc)
+posicionarBarco(tabuleiroJogador, celula, barco)
+imprimirTabuleiro()
 print()
 print()
 
@@ -59,4 +68,6 @@ print()
 print()
 print()
 print()
-print(' '*28, f'Olá, {jogador1}, POSICIONE SUAS EMBARCAÇÕES ATÉ UM TOTAL DE 7 PONTOS')
+print(' '*28, f'Olá, {jogador1}, POSICIONE SUAS EMBARCAÇÕES')
+
+
