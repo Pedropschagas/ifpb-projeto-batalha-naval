@@ -4,19 +4,24 @@ import random # importando a biblioteca para randomizar números
 titulo = ''
 tabuleiroPc = []
 tabuleiroJogador = []
-tamanho_tabuleiro = 15  # entrada do tamanho do tabuleiro.
+tamanho_tabuleiro = 5  # entrada do tamanho do tabuleiro.
 caractereBarco = '<'
 caractereRedor = '-'
 barco = [0, '']
 celula = [0, 0]
-tamanhoDosBarcos = [5, 4, 3, 3, 2, 2]
+tamanhoDosBarcos = [5, 5, 4, 4, 3, 3, 2, 2]
+placar = [0, 0]
+flag = 0
+atingiuBarco = False
+tentativa = []
+sentidoTiroBarco = 'direita'
 
 # Laço construtor de tabuleiro.
 def construirTabuleiro(tamanho_tabuleiro, tabuleiro):
     for i in range(tamanho_tabuleiro):
         lista = []
         for j in range(tamanho_tabuleiro):
-            lista.append(0)
+            lista.append('*')
         tabuleiro.append(lista)
 
 
@@ -52,6 +57,7 @@ def imprimirTabuleiro():
         for j in range(tamanho_tabuleiro):
             print(tabuleiroPc[i][j], end='  ')
         print()
+    print(f'PLACAR\n JOGADOR {placar[0]} X PC {placar[1]}')
 
 
 # A função verifica se o barco estoura o espaço do tabuleiro e se fica muito próximo de outro barco já posicionado
@@ -89,8 +95,6 @@ def posicionarBarco(tabuleiro, celula, barco):
     return True
 
 # Função que marca ao redor de um baco posicionado. Para que não tenha seja colocado outro barco próximo.
-
-
 def marcarRedorBarco(tabuleiro):
     for i in range(tamanho_tabuleiro): # iterando na linha
         for j in range(tamanho_tabuleiro): # iterando na coluna
@@ -142,12 +146,165 @@ def CPUBarcos():
             print(
                 "Número máximo de tentativas para a CPU posicionar barcos estourou, rode o APP novamente!")
 
+#Função para ordenar ataques e placar.
+def tiro(tabuleiro, celula, atirador):
+    if tabuleiro[celula[0]][celula[1]] == caractereBarco:
+        tabuleiro[celula[0]][celula[1]] = 'X'
+        if atirador == 'jogador':
+            placar[0] += 1
+        else:
+            placar[1] += 1
+        imprimirTabuleiro()
+        return True
+    else:
+        tabuleiro[celula[0]][celula[1]] = '0'
+        imprimirTabuleiro()
+        return False
+
+
+#Função para ordenar ataque do PC.
+
+def logicaPc():
+    global flag
+    global sentidoTiroBarco
+    global atingiuBarco
+    if flag == 0:
+        x = random.randint(0, tamanho_tabuleiro-1)
+        y = random.randint(0, tamanho_tabuleiro-1)
+        celulaTiroPC = [x, y]
+        tentativa.append(celulaTiroPC)
+        atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+        if atingiuBarco:
+            flag = 1
+
+    while atingiuBarco:
+        if flag == 1:
+            if sentidoTiroBarco == 'direita':
+                celulaTiroPC = tentativa[-1] #[2,3]
+                celulaTiroPC[1] += 1 #[2, 4]
+                if celulaTiroPC[1] >= tamanho_tabuleiro: # analisando se saiu da parte direita do tabuleiro
+                    sentidoTiroBarco = 'esquerda'
+                    celulaTiroPC[1] -= 2
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        sentidoTiroBarco = 'cima'
+                        return
+                    else:
+                        flag = 2
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        sentidoTiroBarco = 'esquerda'
+                        flag = 2
+                        return
+                    else:
+                        sentidoTiroBarco = 'direita'
+            elif sentidoTiroBarco == 'esquerda':
+                celulaTiroPC = tentativa[-1]
+                celulaTiroPC[1] -= 1
+                if celulaTiroPC[1] < 0: # analisando se saiu da parte esquerda do tabuleiro
+                    sentidoTiroBarco = 'cima'
+                    celulaTiroPC[1] = 0
+                    tentativa.append(celulaTiroPC)
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        celulaTiroPC[1] = 0
+                        tentativa.append(celulaTiroPC)
+                        sentidoTiroBarco = 'cima'
+            elif sentidoTiroBarco == 'cima':
+                celulaTiroPC = tentativa[-1]
+                celulaTiroPC[0] -= 1
+                if celulaTiroPC[0] < 0:  # analisando se saiu da parte superior do tabuleiro
+                    sentidoTiroBarco = 'baixo'
+                    celulaTiroPC[0] += 2
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:  # Pode servir se quiser implementar barcos tamanho 1. Agora não precisa.
+                        flag = 0
+                        return
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        sentidoTiroBarco = 'baixo'
+                        flag = 2
+                        return
+            elif sentidoTiroBarco == 'baixo':
+                celulaTiroPC = tentativa[-1]
+                celulaTiroPC[0] += 1
+                if celulaTiroPC[0] >= tamanho_tabuleiro:  # analisando se saiu da parte superior do tabuleiro
+                    sentidoTiroBarco = 'direita'
+                    celulaTiroPC[0] -= 1
+                    tentativa.append(celulaTiroPC)
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        celulaTiroPC[0] += 1
+                        tentativa.append(celulaTiroPC)
+                        sentidoTiroBarco = 'direita'
+                        flag = 2
+                        return
+        if flag == 2:
+            if sentidoTiroBarco == 'direita':
+                celulaTiroPC = tentativa[-1]
+                celulaTiroPC[1] += 1
+                if celulaTiroPC[1] >= tamanho_tabuleiro:
+                    flag = 0
+                    break
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        flag = 0
+                        return
+            elif sentidoTiroBarco == 'esquerda':
+                celulaTiroPC = tentativa[-1]
+                celulaTiroPC[1] -= 1
+                if celulaTiroPC[1] < 0:
+                    flag = 0
+                    break
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        flag = 0
+                        return
+            elif sentidoTiroBarco == 'cima':
+                celulaTiroPC = tentativa[-1]
+                celulaTiroPC[0] -= 1
+                if celulaTiroPC[0] < 0:
+                    flag = 0
+                    break
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        flag = 0
+                        return
+            elif sentidoTiroBarco == 'baixo':
+                celulaTiroPC = tentativa[-1]
+                celulaTiroPC[0] += 1
+                if celulaTiroPC[0] >= tamanho_tabuleiro:
+                    flag = 0
+                    break
+                else:
+                    tentativa.append(celulaTiroPC)
+                    atingiuBarco = tiro(tabuleiroJogador, celulaTiroPC, 'pc')
+                    if not atingiuBarco:
+                        flag = 0
+                        return
+
 
 # Main
 construirTabuleiro(tamanho_tabuleiro, tabuleiroJogador)
 construirTabuleiro(tamanho_tabuleiro, tabuleiroPc)
 
-barco = [5, 'horizontal']
+barco = [3, 'horizontal']
 celula = [2, 2]
 posicionarBarco(tabuleiroJogador, celula, barco)
 
@@ -168,10 +325,22 @@ celula = [11, 0]
 posicionarBarco(tabuleiroJogador, celula, barco)
 
 barco = [3, 'horizontal']
-celula = [6, 10]
+celula = [2, 2]
 posicionarBarco(tabuleiroJogador, celula, barco)
 
 CPUBarcos()
+
+posicaoTiro = [2, 2]
+tiro(tabuleiroPc, posicaoTiro, 'jogador')
+logicaPc()
+
+posicaoTiro = [1, 1]
+tiro(tabuleiroPc, posicaoTiro, 'jogador')
+logicaPc()
+
+posicaoTiro = [3, 3]
+tiro(tabuleiroPc, posicaoTiro, 'jogador')
+logicaPc()
 
 imprimirTabuleiro()
 
