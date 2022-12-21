@@ -36,7 +36,7 @@ def construirTabuleiro(tamanho_tabuleiro, tabuleiro):
 
 # função para mostrar tabuleiro na tela
 def imprimirTabuleiro():
-    # limparTela()
+    limparTela()
     
     print("------------------------------------------------------------------")
     print("|                                                                |")
@@ -204,8 +204,8 @@ def tamanhoBarcosEscolhidos ():
 # Função para ordenar ataques e placar.
 def tiro(tabuleiro, celula, atirador):
     if atirador != "jogador":
-        print("PC Atirando na posição", chr(celula[0] + 65), celula[1]+1)
-        print(flag, "->",sentidoTiro)
+        print("       !!!  PC Atirando na posição", chr(celula[0] + 65), celula[1]+1, "  !!!")
+        # print(flag, "->",sentidoTiro)
         time.sleep(5)
     if tabuleiro[celula[0]][celula[1]] == caractereBarco:
         tabuleiro[celula[0]][celula[1]] = caractereAcerto
