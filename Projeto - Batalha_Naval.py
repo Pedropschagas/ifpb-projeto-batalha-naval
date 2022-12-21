@@ -6,11 +6,11 @@ titulo = ''
 tabuleiroPc = []
 tabuleiroJogador = []
 tamanho_tabuleiro = 0  # entrada do tamanho do tabuleiro.
-caractereBarco = '<'
+caractereBarco = '🚢'
 caractereRedor = '-'
-caractereAgua = '*'
-caractereAcerto = 'X'
-caractereErro = '0'
+caractereAgua = '🟦'
+caractereAcerto = '💥'
+caractereErro = '❌'
 barco = [0, '']
 celula = [0, 0]
 tamanhoDosBarcos = [5, 5, 4, 4, 4, 3, 2, 2]
@@ -31,7 +31,7 @@ def construirTabuleiro(tamanho_tabuleiro, tabuleiro):
     for i in range(tamanho_tabuleiro):
         lista = []
         for j in range(tamanho_tabuleiro):
-            lista.append('*')
+            lista.append(caractereAgua)
         tabuleiro.append(lista)
 
 # função para mostrar tabuleiro na tela
@@ -50,19 +50,25 @@ def imprimirTabuleiro():
         limite = 10
     referenciaLetra = ['A', 'B', 'C', 'D', 'E', 'F',
                        'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
-    print('   ', end='')
-    for i in range(1, limite):
-        print(i, end='  ')
+    print('    ', end='')
+    for i in range(1, limite):        
+        if i < 9:
+            print(i, end='  ')
+        else:
+            print(i, end=' ')
     print(limite, end=' ')
     if tamanho_tabuleiro > 10:
         for i in range(11, tamanho_tabuleiro + 1):
             print(i, end=' ')
     if limite < 10:
-        print('               ', end='')
+        print('                ', end='')
     else:
         print('              ', end='')
-    for i in range(1, limite):
-        print(i, end='  ')
+    for i in range(1, limite):        
+        if i < 9:
+            print(i, end='  ')
+        else:
+            print(i, end=' ')
     print(limite, end=' ')
     if tamanho_tabuleiro > 10:
         for i in range(11, tamanho_tabuleiro + 1):
@@ -72,15 +78,15 @@ def imprimirTabuleiro():
         print(referenciaLetra[i], end='  ')
         for j in range(tamanho_tabuleiro):
             if tabuleiroJogador[i][j] == caractereRedor:
-                print(caractereAgua, end='  ')
+                print(caractereAgua, end=' ')
             else:
-                print(tabuleiroJogador[i][j], end='  ')
-        print('   ||     ', referenciaLetra[i], end='  ')
+                print(tabuleiroJogador[i][j], end=' ')
+        print('   ||    ', referenciaLetra[i], end='  ')
         for j in range(tamanho_tabuleiro):
             if tabuleiroPc[i][j] == caractereRedor or tabuleiroPc[i][j] == caractereBarco:
-                print(caractereAgua, end='  ')
+                print(caractereAgua, end=' ')
             else:
-                print(tabuleiroPc[i][j], end='  ')
+                print(tabuleiroPc[i][j], end=' ')
         print()
     print()
 
@@ -92,9 +98,12 @@ def imprimirTabuleiroJogador():
         limite = 10
     referenciaLetra = ['A', 'B', 'C', 'D', 'E', 'F',
                        'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
-    print('   ', end='')
+    print('    ', end='')
     for i in range(1, limite):
-        print(i, end='  ')
+        if i < 9:
+            print(i, end='  ')
+        else:
+            print(i, end=' ')
     print(limite, end=' ')
     if tamanho_tabuleiro > 10:
         for i in range(11, tamanho_tabuleiro + 1):
@@ -106,9 +115,9 @@ def imprimirTabuleiroJogador():
         print(referenciaLetra[i], end='  ')
         for j in range(tamanho_tabuleiro):
             if tabuleiroJogador[i][j] == caractereRedor:
-                print(caractereAgua, end='  ')
+                print(caractereAgua, end=' ')
             else:
-                print(tabuleiroJogador[i][j], end='  ')
+                print(tabuleiroJogador[i][j], end=' ')
         print()
 
 # A função verifica se o barco estoura o espaço do tabuleiro e se fica muito próximo de outro barco já posicionado
@@ -206,7 +215,7 @@ def tiro(tabuleiro, celula, atirador):
     if atirador != "jogador":
         print("       !!!  PC Atirando na posição", chr(celula[0] + 65), celula[1]+1, "  !!!")
         # print(flag, "->",sentidoTiro)
-        time.sleep(5)
+        time.sleep(2)
     if tabuleiro[celula[0]][celula[1]] == caractereBarco:
         tabuleiro[celula[0]][celula[1]] = caractereAcerto
         if atirador == 'jogador':
@@ -435,7 +444,6 @@ def logicaPc(vezdoPC):
                             flag = "random"
                             return
         
-
 # Função para jogar
 def jogando():
     while vitoria() == 0:
